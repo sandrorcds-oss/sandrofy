@@ -10,7 +10,7 @@
 <section id="home" class="screen active"><div class="chips"><button class="active" data-filter="all">Todo</button><button data-filter="favorites">Me gusta</button><button data-filter="recent">Recientes</button></div><div class="welcome"><div><span class="smalltext">TU MÚSICA EN TU IPHONE</span><h1>Tu música.<br>A tu manera.</h1><span class="smalltext" id="heroStats">Tu biblioteca personal</span></div><div class="bigNote">♫</div></div><div class="sectionHead"><h2>Escucha ahora</h2><button id="playAll">▶ Reproducir todo</button></div><div id="homeTracks"></div><div class="sectionHead"><h2>Tu actividad</h2></div><div id="homeInfo" class="smalltext"></div></section>
 <section id="searchPage" class="screen"><h1>Buscar</h1><div class="searchBox"><input id="search" class="searchInput" placeholder="Canción, artista o álbum" autocomplete="off"></div><div class="sectionHead"><h2>Resultados</h2><span id="searchCount" class="smalltext"></span></div><div id="searchResults"></div></section>
 <section id="library" class="screen"><h1>Tu biblioteca</h1><div class="toolbar"><button class="btn" id="importBtn">＋ Añadir canciones</button><button class="btn secondary" id="playlistCreate">＋ Playlist</button><button class="btn secondary" id="csvBtn">Spotify CSV</button></div><p class="smalltext">Puedes seleccionar muchos audios de golpe. Tus canciones se guardan en este dispositivo, no en GitHub. No borres los datos de Sandrofy de Safari.</p><div class="sectionHead"><h2>Playlists</h2></div><div id="playlistCards"></div><div class="sectionHead"><h2>Canciones descargadas</h2><button id="sortButton">Ordenar ↕</button></div><div id="libraryTracks"></div><div class="line"></div><div class="sectionHead"><h2>Catálogo Spotify</h2></div><p class="smalltext" id="spotifyStats">Importa un CSV de Exportify para conservar el listado. Las canciones sin archivos de audio no podrán reproducirse.</p><div class="searchBox"><input id="spotifyQuery" class="searchInput" placeholder="Buscar en Spotify importado" autocomplete="off"></div><div id="spotifyCatalog"></div></section>
-<section id="settingsPage" class="screen"><h1>⚙ Ajustes</h1><div class="settingsCard"><h2>Reparar caracteres especiales</h2><p class="smalltext">Corrige automáticamente nombres dañados, como «CanciÃ³n» → «Canción» o «EspaÃ±a» → «España». Revisa títulos, artistas y álbumes de tus audios y del catálogo importado desde Spotify. No modifica ni elimina el audio.</p><button class="btn" id="repairNames">Analizar y reparar nombres</button><p id="repairStatus" class="smalltext" aria-live="polite"></p></div><div class="settingsCard"><h2>Controles con pantalla bloqueada</h2><p class="smalltext">Sandrofy solicita controles de canción anterior y siguiente a iOS. Los accesos de saltar 10 segundos se han desactivado. iOS decide finalmente qué botones aparecen: si siguen saliendo +10/−10, es una limitación del sistema o de su PWA, no algo que la web pueda forzar.</p><p id="mediaStatus" class="smalltext"></p><button class="btn secondary" id="refreshMedia">Reactivar controles de canciones</button></div><div class="settingsCard"><h2>Conservar tu biblioteca</h2><p class="smalltext">Tus audios y sus portadas se quedan en este iPhone. No borres los datos del sitio web ni desinstales Sandrofy sin tener una copia de tus canciones.</p></div></section>
+<section id="settingsPage" class="screen"><h1>⚙ Ajustes</h1><div class="settingsCard"><h2>Reparar caracteres especiales</h2><p class="smalltext">Corrige nombres dañados, incluso cuando mezclan emojis y caracteres correctos: «CanciÃ³n 😍» → «Canción 😍». Revisa títulos, artistas y álbumes de tus audios y del catálogo importado desde Spotify. No modifica ni elimina el audio. También repara los nombres de playlists importadas.</p><button class="btn" id="repairNames">Analizar y reparar nombres</button><p id="repairStatus" class="smalltext" aria-live="polite"></p></div><div class="settingsCard"><h2>Controles con pantalla bloqueada</h2><p class="smalltext">Sandrofy solicita controles de canción anterior y siguiente a iOS. Los accesos de saltar 10 segundos se han desactivado. iOS decide finalmente qué botones aparecen: si siguen saliendo +10/−10, es una limitación del sistema o de su PWA, no algo que la web pueda forzar.</p><p id="mediaStatus" class="smalltext"></p><button class="btn secondary" id="refreshMedia">Reactivar controles de canciones</button></div><div class="settingsCard"><h2>Portadas de álbum</h2><p class="smalltext">Al subir una imagen, Sandrofy la recorta al centro en formato 1:1. Las portadas antiguas también se preparan cuadradas para los controles del iPhone cuando vuelves a reproducirlas.</p></div><div class="settingsCard"><h2>Conservar tu biblioteca</h2><p class="smalltext">Tus audios y sus portadas se quedan en este iPhone. No borres los datos del sitio web ni desinstales Sandrofy sin tener una copia de tus canciones.</p></div></section>
 <section id="playlistPage" class="screen"><button class="btn secondary" id="backLibrary">← Biblioteca</button><div class="sectionHead"><h2 id="playlistName">Playlist</h2><button id="playlistAction">⋯</button></div><button class="btn" id="playPlaylist">▶ Reproducir</button><div id="playlistTracks" style="margin-top:15px"></div></section>
 </div>
 <input type="file" id="audioFiles" accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg" multiple hidden><input type="file" id="csvFile" accept=".csv,text/csv" hidden>
@@ -66,7 +66,32 @@ function refreshPlayer(){const t=getTrack(current);$('mini').hidden=!t;$('miniPr
  $('miniTitle').textContent=$('nowTitle').textContent=t.title||'Sin título';$('miniArtist').textContent=$('nowArtist').textContent=t.artist||'Artista desconocido';$('miniArt').innerHTML=$('largeArt').innerHTML=coverFor(t)?`<img src="${html(coverFor(t))}" alt="Portada del álbum">`:'♫';
  $('miniHeart').textContent=$('bigHeart').textContent=favs.has(t.id)?'♥':'♡';$('miniHeart').classList.toggle('active',favs.has(t.id));$('bigHeart').classList.toggle('active',favs.has(t.id));$('miniPlay').textContent=$('bigPlay').textContent=audio.paused?'▶':'Ⅱ';$('shuffle').classList.toggle('active',shuffle);$('repeat').classList.toggle('active',repeat>0);$('repeat').textContent=repeat===2?'↻₁':'↻';syncMedia()}
 function syncPosition(){const d=audio.duration;const p=d>0?audio.currentTime/d*100:0;$('progress').value=p;$('miniProgress').style.width=p+'%';$('elapsed').textContent=fmt(audio.currentTime);$('total').textContent=fmt(d);if('mediaSession'in navigator&&Number.isFinite(d)&&d>0){try{navigator.mediaSession.setPositionState({duration:d,position:Math.min(audio.currentTime,d),playbackRate:audio.playbackRate})}catch{}}}
-function syncMedia(){if(!('mediaSession'in navigator)||!current)return;let t=getTrack(current);if(!t)return;const c=coverFor(t);let art=[];if(c)art=[{src:c,sizes:'512x512'}];try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title||'Sin título',artist:t.artist||'Artista desconocido',album:t.album||'Sandrofy',artwork:art});navigator.mediaSession.playbackState=audio.paused?'paused':'playing'}catch{} }
+let lockArtSource='',lockArtSquare='',lockArtPending=null;
+function setNativeMetadata(t,art=''){
+ if(!('mediaSession'in navigator))return;
+ try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title||'Sin título',artist:t.artist||'Artista desconocido',album:t.album||'Sandrofy',artwork:art?[{src:art,sizes:'512x512',type:'image/jpeg'}]:[]});navigator.mediaSession.playbackState=audio.paused?'paused':'playing'}catch{}
+}
+function syncMedia(){
+ if(!('mediaSession'in navigator)||!current)return;
+ const t=getTrack(current);if(!t)return;
+ const src=coverFor(t);
+ // Custom covers are cropped to a true 512x512 JPEG before sending to iOS.
+ // For online images, iOS can fetch the source itself (CORS forbids canvas crops).
+ if(!t.coverData){
+  try{navigator.mediaSession.metadata=new MediaMetadata({title:t.title||'Sin título',artist:t.artist||'Artista desconocido',album:t.album||'Sandrofy',artwork:src?[{src}]:[]});navigator.mediaSession.playbackState=audio.paused?'paused':'playing'}catch{}
+  return;
+ }
+ if(lockArtSource===src&&lockArtSquare){setNativeMetadata(t,lockArtSquare);return}
+ setNativeMetadata(t);
+ if(lockArtSource===src&&lockArtPending)return;
+ lockArtSource=src;lockArtSquare='';
+ lockArtPending=squareImageData(src,512).then(square=>{
+  if(lockArtSource!==src)return;
+  lockArtSquare=square;
+  const active=getTrack(current);
+  if(active&&coverFor(active)===src)setNativeMetadata(active,square);
+ }).catch(()=>{const active=getTrack(current);if(active&&coverFor(active)===src)setNativeMetadata(active,src)}).finally(()=>{if(lockArtSource===src)lockArtPending=null});
+}
 // iOS tends to show +/-10 sec when seekforward/seekbackward are registered.
 // Register ONLY song-navigation handlers; system UI is ultimately controlled by iOS.
 function installMediaActions(){
@@ -87,18 +112,19 @@ function installMediaActions(){
 installMediaActions();
 
 audio.addEventListener('play',refreshPlayer);audio.addEventListener('pause',refreshPlayer);audio.addEventListener('loadedmetadata',()=>{syncPosition();refreshPlayer()});audio.addEventListener('timeupdate',syncPosition);audio.addEventListener('ended',()=>{if(repeat===2){audio.currentTime=0;audio.play().catch(()=>{});}else next()});audio.addEventListener('error',()=>{if(current)notify('No se puede reproducir este archivo. Prueba MP3 o M4A.')});
-async function importFiles(files){let n=0,skipped=0;for(const file of files){if(!/\.(mp3|m4a|aac|wav|flac|ogg)$/i.test(file.name)&&!file.type.startsWith('audio/')){skipped++;continue}let stem=file.name.replace(/\.[^.]+$/,'');let parts=stem.split(/\s+-\s+/);let t={id:uid(),title:parts.length>1?parts.slice(1).join(' - '):stem,artist:parts.length>1?parts[0]:'Artista desconocido',album:'',blob:file,added:Date.now()+n};
+async function importFiles(files){let n=0,skipped=0;for(const file of files){if(!/\.(mp3|m4a|aac|wav|flac|ogg)$/i.test(file.name)&&!file.type.startsWith('audio/')){skipped++;continue}let stem=repairText(file.name.replace(/\.[^.]+$/,''));let parts=stem.split(/\s+-\s+/);let t={id:uid(),title:parts.length>1?parts.slice(1).join(' - '):stem,artist:parts.length>1?parts[0]:'Artista desconocido',album:'',blob:file,added:Date.now()+n};
  // Don't auto-import exact duplicate filenames and sizes twice.
  if(tracks.some(x=>x.blob?.name===file.name&&x.blob?.size===file.size)){skipped++;continue}
  try{await storePut(t);tracks.push(t);n++}catch(e){notify('Almacenamiento lleno o bloqueado: '+n+' canciones guardadas');break}}
  matchCatalog();render();notify(n+' canciones importadas'+(skipped?' · '+skipped+' omitidas':''));}
-async function imageToData(file){if(!file)return '';if(!file.type.startsWith('image/'))throw Error('Selecciona una imagen');return new Promise((res,rej)=>{let img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{try{let cv=document.createElement('canvas'),size=600,scale=Math.min(1,size/Math.max(img.width,img.height));cv.width=Math.max(1,Math.round(img.width*scale));cv.height=Math.max(1,Math.round(img.height*scale));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(u);res(cv.toDataURL('image/jpeg',.82))}catch(e){rej(e)}};img.onerror=()=>{URL.revokeObjectURL(u);rej(Error('No se pudo abrir la imagen'))};img.src=u})}
+async function squareImageData(src,size=512){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{try{const c=document.createElement('canvas');c.width=c.height=size;const side=Math.min(img.naturalWidth,img.naturalHeight),x=(img.naturalWidth-side)/2,y=(img.naturalHeight-side)/2;const ctx=c.getContext('2d');ctx.drawImage(img,x,y,side,side,0,0,size,size);res(c.toDataURL('image/jpeg',.88))}catch(err){rej(err)}};img.onerror=()=>rej(Error('No se pudo procesar la portada'));img.src=src})}
+async function imageToData(file){if(!file)return '';if(!file.type.startsWith('image/'))throw Error('Selecciona una imagen');const u=URL.createObjectURL(file);try{return await squareImageData(u,512)}finally{URL.revokeObjectURL(u)}}
 function showSheet(title,body){$('sheetTitle').textContent=title;$('sheetBody').innerHTML=body;$('overlay').classList.add('open')}
 function hideSheet(){$('overlay').classList.remove('open');editId=null;workingArt=null}
-function editTrack(id){const t=getTrack(id);if(!t)return;editId=id;workingArt=t.coverData||'';showSheet('Editar canción',`<div class="editArt" id="editArt">${coverFor(t)?`<img src="${html(coverFor(t))}" alt="">`:'♫'}</div><div class="toolbar" style="justify-content:center"><label class="btn secondary" for="coverFile">Cambiar portada</label><button class="btn secondary" id="removeCover" type="button">Quitar portada</button></div><input type="file" id="coverFile" class="fileInput" accept="image/*"><label class="field">Título<input id="editTitle" maxlength="250" value="${html(t.title)}"></label><label class="field">Artista o artistas<input id="editArtist" maxlength="250" value="${html(t.artist||'')}"></label><label class="field">Álbum (opcional)<input id="editAlbum" maxlength="250" value="${html(t.album||'')}"></label><div class="sheetActions"><button class="btn" id="saveTrack">Guardar cambios</button><button class="btn danger" id="deleteTrack">Eliminar canción</button></div><p class="smalltext">Los datos y la portada quedarán guardados en este iPhone. En las próximas reproducciones también aparecerán en la pantalla bloqueada, cuando iOS lo admita.</p>`);
+function editTrack(id){const t=getTrack(id);if(!t)return;editId=id;workingArt=t.coverData||'';showSheet('Editar canción',`<div class="editArt" id="editArt">${coverFor(t)?`<img src="${html(coverFor(t))}" alt="">`:'♫'}</div><div class="toolbar" style="justify-content:center"><label class="btn secondary" for="coverFile">Cambiar portada</label><button class="btn secondary" id="removeCover" type="button">Quitar portada</button></div><input type="file" id="coverFile" class="fileInput" accept="image/*"><label class="field">Título<input id="editTitle" maxlength="250" value="${html(t.title)}"></label><label class="field">Artista o artistas<input id="editArtist" maxlength="250" value="${html(t.artist||'')}"></label><label class="field">Álbum (opcional)<input id="editAlbum" maxlength="250" value="${html(t.album||'')}"></label><div class="sheetActions"><button class="btn" id="saveTrack">Guardar cambios</button><button class="btn danger" id="deleteTrack">Eliminar canción</button></div><p class="smalltext">La foto se recorta automáticamente al centro en formato cuadrado (1:1), también para la pantalla bloqueada. Los datos y la portada quedarán guardados en este iPhone. En las próximas reproducciones también aparecerán en la pantalla bloqueada, cuando iOS lo admita.</p>`);
  $('coverFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{workingArt=await imageToData(f);$('editArt').innerHTML=`<img src="${workingArt}" alt="Nueva portada">`}catch(ex){notify(ex.message)}};
  $('removeCover').onclick=()=>{workingArt='';$('editArt').innerHTML='♫'};
- $('saveTrack').onclick=async()=>{let title=$('editTitle').value.trim(),artist=$('editArtist').value.trim();if(!title)return notify('El título no puede estar vacío');t.title=title;t.artist=artist||'Artista desconocido';t.album=$('editAlbum').value.trim();t.coverData=workingArt;t.art='';try{await storePut(t);hideSheet();render();notify('Canción actualizada')}catch{notify('No se pudo guardar: comprueba el almacenamiento')}};
+ $('saveTrack').onclick=async()=>{let title=$('editTitle').value.trim(),artist=$('editArtist').value.trim();if(!title)return notify('El título no puede estar vacío');t.title=title;t.artist=artist||'Artista desconocido';t.album=$('editAlbum').value.trim();t.coverData=workingArt;t.art='';lockArtSource='';lockArtSquare='';lockArtPending=null;try{await storePut(t);hideSheet();render();notify('Canción actualizada')}catch{notify('No se pudo guardar: comprueba el almacenamiento')}};
  $('deleteTrack').onclick=()=>deleteConfirm(id);
 }
 async function deleteConfirm(id){let t=getTrack(id);if(!t||!confirm('¿Eliminar «'+t.title+'» y su audio de Sandrofy?'))return;await storeDelete(id);tracks=tracks.filter(x=>x.id!==id);favs.delete(id);for(const ids of Object.values(playlists)){const i=ids.indexOf(id);if(i>=0)ids.splice(i,1)}playQueue=playQueue.filter(x=>x!==id);if(current===id){audio.pause();audio.removeAttribute('src');current=null;queueIndex=-1;$('fullPlayer').classList.remove('open')}persist();hideSheet();render();notify('Canción eliminada')}
@@ -111,23 +137,43 @@ function parseCSV(s){s=s.replace(/^\uFEFF/,'');let rows=[],r=[],f='',quoted=fals
 function matchCatalog(){let titleMap=new Map();for(let t of tracks){let k=normal(t.title);if(!titleMap.has(k))titleMap.set(k,[]);titleMap.get(k).push(t)}for(let x of catalog){if(x.linkedId&&getTrack(x.linkedId))continue;let candidates=titleMap.get(normal(x.title))||[];let t=candidates.find(z=>normal(z.artist)===normal(x.artist))||candidates.find(z=>normal(x.artist).includes(normal(z.artist))&&normal(z.artist))||(candidates.length===1?candidates[0]:null);x.linkedId=t?t.id:null}
  for(let name of new Set(catalog.map(x=>x.list))){let ids=catalog.filter(x=>x.list===name&&x.linkedId).map(x=>x.linkedId);playlists[name]=[...new Set(ids)]}try{localStorage.setItem('sandrofy_spotify_catalog_v1',JSON.stringify(catalog))}catch{}persist()}
 function renderCatalog(){const linked=catalog.filter(x=>x.linkedId&&getTrack(x.linkedId)).length;$('spotifyStats').textContent=catalog.length?`${catalog.length} canciones listadas · ${linked} con audio · ${catalog.length-linked} pendientes de archivo. Las canciones sin audio se muestran como catálogo, no se pueden escuchar.`:'Importa tu CSV de Exportify para ver los títulos y vincular automáticamente los audios que tengas.';const q=normal($('spotifyQuery').value);const found=catalog.filter(x=>!q||normal(x.title+' '+x.artist+' '+x.album).includes(q)).slice(0,85);$('spotifyCatalog').innerHTML=found.map(x=>`<div class="track">${artwork(x)}<div class="info"><strong>${html(x.title)}</strong><span class="sub">${html(x.artist)} · ${x.linkedId&&getTrack(x.linkedId)?'✓ Disponible':'Sin audio'}</span></div>${x.linkedId&&getTrack(x.linkedId)?`<button class="icon" data-do="play" data-id="${html(x.linkedId)}">▶</button>`:''}</div>`).join('')+(catalog.length>85?'<p class="smalltext">Mostrando hasta 85 canciones. Utiliza el buscador para encontrar el resto.</p>':'')}
-async function importCSV(file){let rows=parseCSV(await file.text());let headers=rows.shift().map(x=>x.trim().replace(/^\uFEFF/,''));const index=s=>headers.indexOf(s);if(index('Nombre de la canción')<0)throw Error('El CSV no parece exportado desde Exportify');const val=(r,n)=>r[index(n)]||'';const name='Spotify · '+file.name.replace(/\.csv$/i,'').replace(/^playlist[_ -]*/i,'').trim();catalog=catalog.filter(x=>x.list!==name).concat(rows.filter(r=>val(r,'Nombre de la canción')).map(r=>({title:val(r,'Nombre de la canción'),artist:val(r,'Nombre(s) del artista'),album:val(r,'Nombre del álbum'),art:val(r,'URL de la imagen del álbum'),uri:val(r,'URI de la canción'),list:name,linkedId:null})));matchCatalog();render();notify('Importadas '+rows.length+' entradas de Spotify')}
+async function importCSV(file){let rows=parseCSV(await file.text());let headers=rows.shift().map(x=>x.trim().replace(/^\uFEFF/,''));const index=s=>headers.indexOf(s);if(index('Nombre de la canción')<0)throw Error('El CSV no parece exportado desde Exportify');const val=(r,n)=>r[index(n)]||'';const name='Spotify · '+repairText(file.name.replace(/\.csv$/i,'').replace(/^playlist[_ -]*/i,'').trim());catalog=catalog.filter(x=>x.list!==name).concat(rows.filter(r=>val(r,'Nombre de la canción')).map(r=>({title:repairText(val(r,'Nombre de la canción')),artist:repairText(val(r,'Nombre(s) del artista')),album:repairText(val(r,'Nombre del álbum')),art:val(r,'URL de la imagen del álbum'),uri:val(r,'URI de la canción'),list:name,linkedId:null})));matchCatalog();render();notify('Importadas '+rows.length+' entradas de Spotify')}
 
-// Conservative mojibake repair. Only fixes text that contains typical UTF-8-as-Windows1252
-// markers and whose bytes decode cleanly to valid UTF-8. Never touches audio blobs.
+// Reparación por fragmentos: no falla cuando el título mezcla emojis o acentos correctos
+// con texto dañado. Ej.: «MÃºsica 🎵 de Beyoncé» → «Música 🎵 de Beyoncé».
 const win1252Reverse={8364:128,8218:130,402:131,8222:132,8230:133,8224:134,8225:135,710:136,8240:137,352:138,8249:139,338:140,381:142,8216:145,8217:146,8220:147,8221:148,8226:149,8211:150,8212:151,732:152,8482:153,353:154,8250:155,339:156,382:158,376:159};
 const utf8Fatal=new TextDecoder('utf-8',{fatal:true});
+function mojibakeByte(char){const cp=char.codePointAt(0);return win1252Reverse[cp]??(cp<=255?cp:null)}
+function decodeCorruptSequence(s,start){
+ const lead=mojibakeByte(s[start]);
+ // UTF-8 lead bytes, including most accents, curly punctuation and emoji.
+ const count=lead>=194&&lead<=223?2:lead>=224&&lead<=239?3:lead>=240&&lead<=244?4:0;
+ if(!count||start+count>s.length)return null;
+ const bytes=[lead];
+ for(let i=1;i<count;i++){
+  const b=mojibakeByte(s[start+i]);
+  if(b===null||b<128||b>191)return null;
+  bytes.push(b);
+ }
+ try{
+  const text=utf8Fatal.decode(new Uint8Array(bytes));
+  // Un bloque mal codificado debe contener al menos uno de los prefijos habituales.
+  if(text==='\uFFFD'||!text)return null;
+  return {value:text,length:count};
+ }catch{return null}
+}
 function repairText(value){
  let v=String(value??'');
- for(let round=0;round<2;round++){
-   if(!/(?:Ã.|Â.|â.|ðŸ|Ð.|Ñ.)/.test(v))break;
-   const bytes=[];let possible=true;
-   for(const char of v){const code=char.codePointAt(0);const byte=win1252Reverse[code]??code;
-     if(byte>255){possible=false;break}bytes.push(byte)}
-   if(!possible)break;
-   let candidate;try{candidate=utf8Fatal.decode(new Uint8Array(bytes))}catch{break}
-   if(candidate===v||candidate.includes('\uFFFD'))break;
-   v=candidate;
+ for(let pass=0;pass<3;pass++){
+  let result='',changed=false;
+  const chars=[...v];
+  for(let i=0;i<chars.length;){
+   const found=decodeCorruptSequence(chars,i);
+   if(found){result+=found.value;i+=found.length;changed=true}
+   else{result+=chars[i];i++}
+  }
+  if(!changed)break;
+  v=result;
  }
  return v;
 }
@@ -138,6 +184,7 @@ function repairCandidates(){
    const after=repairText(before);
    if(after!==before){total++;if(samples.length<6)samples.push(before+' → '+after)}
  }
+ for(const name of Object.keys(playlists)){const after=repairText(name);if(after!==name){total++;if(samples.length<6)samples.push(name+' → '+after)}}
  return {total,samples};
 }
 async function repairNames(){
@@ -159,6 +206,8 @@ async function repairNames(){
   for(const x of catalog)for(const k of ['title','artist','album'])if(typeof x[k]==='string'){
    const clean=repairText(x[k]);if(clean!==x[k]){x[k]=clean;repaired++}
   }
+  for(const x of catalog)if(typeof x.list==='string'){const clean=repairText(x.list);if(clean!==x.list){x.list=clean;repaired++}}
+  for(const oldName of Object.keys(playlists)){const clean=repairText(oldName);if(clean!==oldName){if(!playlists[clean])playlists[clean]=[];playlists[clean]=[...new Set([...playlists[clean],...playlists[oldName]])];delete playlists[oldName];if(activePlaylist===oldName)activePlaylist=clean;repaired++}}
   try{localStorage.setItem('sandrofy_spotify_catalog_v1',JSON.stringify(catalog))}catch{failed++}
   matchCatalog();render();
   el.textContent=`✓ ${repaired} campos reparados.`+(failed?` No se pudieron guardar ${failed} cambios.`:'')+' Puedes volver a ejecutar el análisis cuando quieras.';
@@ -182,5 +231,4 @@ $('miniArt').onclick=$('miniInfo').onclick=()=>$('fullPlayer').classList.add('op
 (async()=>{try{await dbOpen();tracks=await storeAll();matchCatalog();render();if(navigator.storage?.persist)navigator.storage.persist().catch(()=>{});}catch(e){render();notify('No se ha podido abrir la biblioteca de Sandrofy.')}})();
 if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script></body></html>
-
 
